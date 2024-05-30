@@ -3,7 +3,6 @@ package embed
 import (
 	"embed"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"io/fs"
 	"os"
 	"os/exec"
@@ -18,14 +17,14 @@ func ExtractingBinaries() (string, func(), error) {
 	// create temporary directory
 	tempDir, err := os.MkdirTemp("", "sr65-software-*")
 	if err != nil {
-		logger.LogError(logrus.ErrorLevel, "error creating temporary directory", err)
+		logger.Error("error creating temporary directory", err)
 		return "", func() {}, err
 	}
 
 	// extract embedded binaries
 	err = extractEmbedFiles(embeddedBinFS, tempDir, "bin")
 	if err != nil {
-		logger.LogError(logrus.ErrorLevel, "error extracting embedded binaries", err)
+		logger.Error("error extracting embedded binaries", err)
 		return "", func() {}, err
 	}
 
@@ -34,7 +33,7 @@ func ExtractingBinaries() (string, func(), error) {
 	pathEnv = fmt.Sprintf("%s%c%s", tempDir, os.PathListSeparator, pathEnv)
 	err = os.Setenv("PATH", pathEnv)
 	if err != nil {
-		logger.Log.Error("error updating PATH: ", err)
+		logger.Error("error updating PATH", err)
 		return "", func() {}, err
 	}
 

@@ -2,29 +2,32 @@ package logger
 
 import "github.com/sirupsen/logrus"
 
-var Log = logrus.New()
+var log = logrus.New()
 
-func LogError(level logrus.Level, message string, err error) {
-	entry := Log.WithField("error", err)
-	switch level {
-	case logrus.PanicLevel:
-		entry.Panic(message)
-	case logrus.FatalLevel:
-		entry.Fatal(message)
-	case logrus.ErrorLevel:
-		entry.Error(message)
-	case logrus.WarnLevel:
-		entry.Warn(message)
-	case logrus.InfoLevel:
-		entry.Info(message)
-	case logrus.DebugLevel:
-		entry.Debug(message)
-	case logrus.TraceLevel:
-		entry.Trace(message)
+func Info(message string) {
+	log.Info(message)
+}
+
+func Warn(message string, err ...error) {
+	if len(err) > 0 {
+		log.WithError(err[0]).Warn(message)
+	} else {
+		log.Warn(message)
 	}
 }
 
-func LogErrorEmbed(message string, err error) {
-	Log.WithField("error", err).Error(message)
-	Log.Warn("error occuring when extracting embedded binaries, fallback to system binaries")
+func Error(message string, err ...error) {
+	if len(err) > 0 {
+		log.WithError(err[0]).Error(message)
+	} else {
+		log.Error(message)
+	}
+}
+
+func Fatal(message string, err ...error) {
+	if len(err) > 0 {
+		log.WithError(err[0]).Panic(message)
+	} else {
+		log.Fatal(message)
+	}
 }
