@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sr65-software/logger"
 )
@@ -13,31 +12,31 @@ import (
 //go:embed bin/*
 var embeddedBinFS embed.FS
 
-func ExtractingBinaries() (string, func(), error) {
+func ExtractBinaries() (func(), error) {
 	// create temporary directory
-	tempDir, err := os.MkdirTemp("", "sr65-software-*")
+	tmpDir, err := os.MkdirTemp("", "sr65-software-*")
 	if err != nil {
 		logger.Error("error creating temporary directory", err)
-		return "", func() {}, err
+		return func() {}, err
 	}
 
 	// extract embedded binaries
-	err = extractEmbedFiles(embeddedBinFS, tempDir, "bin")
+	err = extractEmbedFiles(embeddedBinFS, tmpDir, "bin")
 	if err != nil {
 		logger.Error("error extracting embedded binaries", err)
-		return "", func() {}, err
+		return func() {}, err
 	}
 
 	// add temporary directory to PATH
 	pathEnv := os.Getenv("PATH")
-	pathEnv = fmt.Sprintf("%s%c%s", tempDir, os.PathListSeparator, pathEnv)
+	pathEnv = fmt.Sprintf("%s%c%s", tmpDir, os.PathListSeparator, pathEnv)
 	err = os.Setenv("PATH", pathEnv)
 	if err != nil {
 		logger.Error("error updating PATH", err)
-		return "", func() {}, err
+		return func() {}, err
 	}
 
-	return tempDir, func() { os.RemoveAll(tempDir) }, nil
+	return func() { os.RemoveAll(tmpDir) }, nil
 }
 
 func extractEmbedFiles(embedFS embed.FS, dir string, root string) error {
@@ -67,15 +66,4 @@ func extractEmbedFiles(embedFS embed.FS, dir string, root string) error {
 		// write file
 		return os.WriteFile(targetPath, data, 0755)
 	})
-}
-
-func ffmpeg() {
-	// Now you can execute ffmpeg
-	cmd := exec.Command("ffmpeg", "-v")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	if err := cmd.Run(); err != nil {
-		fmt.Println("Error:", err)
-	}
 }
