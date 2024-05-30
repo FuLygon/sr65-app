@@ -1,3 +1,7 @@
+### Custom
+sr65-software*
+embed/bin/*
+
 ### VisualStudioCode template
 .vscode/*
 !.vscode/settings.json
