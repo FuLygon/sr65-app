@@ -38,10 +38,10 @@ func TestConvertStatic(t *testing.T) {
 
 	// check if the output file exist
 	outputPath := generateOutputStatic(f.Name())
-	defer os.Remove(outputPath)
 	if _, err = os.Stat(outputPath); os.IsNotExist(err) {
 		t.Errorf("output file was not created")
 	}
+	defer os.Remove(outputPath)
 
 	// open output file
 	outputFile, err := os.Open(outputPath)
