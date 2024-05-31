@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-var (
+const (
 	outputDir           = "outputs"
 	outputStaticExt     = "jpg"
 	outputStaticQuality = 95
