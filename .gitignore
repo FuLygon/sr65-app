@@ -1,6 +1,7 @@
 ### Custom
 sr65-software*
 embed/bin/*
+outputs/*
 
 ### VisualStudioCode template
 .vscode/*
