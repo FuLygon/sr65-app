@@ -2,15 +2,12 @@ package main
 
 import (
 	"errors"
-	"fmt"
-	"github.com/disintegration/imaging"
 	"github.com/ncruces/zenity"
-	"image"
-	"image/jpeg"
 	_ "image/png"
 	"os"
 	"path/filepath"
 	"sr65-software/embed"
+	"sr65-software/internal"
 	"sr65-software/logger"
 	"strings"
 )
@@ -70,65 +67,12 @@ func main() {
 	logger.Info("converting file")
 	switch strings.ToLower(filepath.Ext(inputPath)) {
 	case ".jpg", ".png":
-		convertStatic(inputPath)
+		internal.ConvertStatic(inputPath, outputDir, outputStaticExt, outputStaticQuality)
 	case ".gif", ".mp4":
-		convertDynamic()
+		internal.ConvertDynamic()
 	default:
 		logger.Fatal("unsupported file format")
 	}
 
 	logger.Info(`converted successfully, output saved in "outputs" directory. Exiting...`)
-}
-
-func convertStatic(inputPath string) {
-	// open input file
-	inputFile, err := os.Open(inputPath)
-	if err != nil {
-		logger.Fatal("error opening input file", err)
-	}
-	defer func(inputFile *os.File) {
-		err = inputFile.Close()
-		if err != nil {
-			logger.Error("error closing input file", err)
-		}
-	}(inputFile)
-
-	// decode image
-	img, _, err := image.Decode(inputFile)
-	if err != nil {
-		logger.Fatal("error decoding image", err)
-	}
-
-	// resizing image
-	img = imaging.Resize(img, 128, 128, imaging.Lanczos)
-
-	// create output file
-	outputFile, err := os.Create(generateOutput(inputPath, outputStaticExt))
-	if err != nil {
-		logger.Fatal("error creating output file", err)
-	}
-	defer func(outputFile *os.File) {
-		err = outputFile.Close()
-		if err != nil {
-			logger.Error("error closing output file", err)
-		}
-	}(outputFile)
-
-	// encode img to output file
-	err = jpeg.Encode(outputFile, img, &jpeg.Options{Quality: outputStaticQuality})
-	if err != nil {
-		logger.Fatal("error encoding image", err)
-	}
-
-	return
-}
-
-func convertDynamic() {
-}
-
-func generateOutput(inputPath, outputExt string) string {
-	inputBase := filepath.Base(inputPath)
-	inputExt := filepath.Ext(inputPath)
-	inputName := inputBase[0 : len(inputBase)-len(inputExt)]
-	return fmt.Sprintf("%s/%s.%s", outputDir, inputName, outputExt)
 }
