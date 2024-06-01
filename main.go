@@ -103,7 +103,7 @@ func convertStatic(inputPath string) {
 	img = imaging.Resize(img, 128, 128, imaging.Lanczos)
 
 	// create output file
-	outputFile, err := os.Create(generateOutputStatic(inputPath))
+	outputFile, err := os.Create(generateOutput(inputPath, outputStaticExt))
 	if err != nil {
 		logger.Fatal("error creating output file", err)
 	}
@@ -126,9 +126,9 @@ func convertStatic(inputPath string) {
 func convertDynamic() {
 }
 
-func generateOutputStatic(inputPath string) string {
+func generateOutput(inputPath, outputExt string) string {
 	inputBase := filepath.Base(inputPath)
 	inputExt := filepath.Ext(inputPath)
 	inputName := inputBase[0 : len(inputBase)-len(inputExt)]
-	return fmt.Sprintf("%s/%s.%s", outputDir, inputName, outputStaticExt)
+	return fmt.Sprintf("%s/%s.%s", outputDir, inputName, outputExt)
 }

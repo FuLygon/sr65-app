@@ -37,7 +37,7 @@ func TestConvertStatic(t *testing.T) {
 	convertStatic(f.Name())
 
 	// check if the output file exist
-	outputPath := generateOutputStatic(f.Name())
+	outputPath := generateOutput(f.Name(), outputStaticExt)
 	if _, err = os.Stat(outputPath); os.IsNotExist(err) {
 		t.Errorf("output file was not created")
 	}
@@ -67,7 +67,7 @@ func TestGenerateOutputStatic(t *testing.T) {
 	testImagePath := "test.png"
 
 	// Call the function
-	outputPath := generateOutputStatic(testImagePath)
+	outputPath := generateOutput(testImagePath, outputStaticExt)
 
 	// Check if the output path is correct
 	expectedOutputPath := filepath.Join(outputDir, "test."+outputStaticExt)
