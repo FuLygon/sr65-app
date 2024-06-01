@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"github.com/ncruces/zenity"
-	_ "image/png"
 	"os"
 	"path/filepath"
 	"sr65-software/embed"
@@ -14,8 +13,9 @@ import (
 
 const (
 	outputDir           = "outputs"
-	outputStaticExt     = "jpg"
-	outputStaticQuality = 95
+	outputExtStatic     = "jpg"
+	outputExtDynamic    = "mjpeg"
+	outputQualityStatic = 95
 )
 
 func main() {
@@ -58,7 +58,7 @@ func main() {
 	}
 
 	// create output directory
-	err = os.MkdirAll(outputDir, 0644)
+	err = os.MkdirAll(outputDir, 0755)
 	if err != nil {
 		logger.Fatal("error creating output directory", err)
 	}
@@ -67,9 +67,9 @@ func main() {
 	logger.Info("converting file")
 	switch strings.ToLower(filepath.Ext(inputPath)) {
 	case ".jpg", ".png":
-		internal.ConvertStatic(inputPath, outputDir, outputStaticExt, outputStaticQuality)
+		internal.ConvertStatic(inputPath, outputDir, outputExtStatic, outputQualityStatic)
 	case ".gif", ".mp4":
-		internal.ConvertDynamic()
+		internal.ConvertDynamic(inputPath, outputDir, outputExtDynamic)
 	default:
 		logger.Fatal("unsupported file format")
 	}
