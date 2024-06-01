@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-var (
+const (
 	testImage           = "test.png"
 	outputDir           = "outputs_test"
 	outputStaticExt     = "jpg"
