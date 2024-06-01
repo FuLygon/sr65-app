@@ -54,7 +54,7 @@ func TestConvertStatic(t *testing.T) {
 	if _, err = os.Stat(outputPath); os.IsNotExist(err) {
 		t.Errorf("output file was not created")
 	}
-	defer os.Remove(outputPath)
+	defer os.RemoveAll(outputDir)
 
 	// open output file
 	outputFile, err := os.Open(outputPath)
