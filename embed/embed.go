@@ -6,7 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"sr65-software/logger"
+	"sr65-app/logger"
 )
 
 //go:embed bin/*
@@ -14,7 +14,7 @@ var embeddedBinFS embed.FS
 
 func ExtractBinaries() (func(), error) {
 	// create temporary directory
-	tmpDir, err := os.MkdirTemp("", "sr65-software-*")
+	tmpDir, err := os.MkdirTemp("", "sr65-app-*")
 	if err != nil {
 		logger.Error("error creating temporary directory", err)
 		return func() {}, err

@@ -21,7 +21,7 @@ func TestExtractBinaries(t *testing.T) {
 	paths := strings.Split(pathEnv, string(os.PathListSeparator))
 	var tmpDirAdded bool
 	for _, path := range paths {
-		if strings.HasPrefix(path, filepath.Join(os.TempDir(), "sr65-software-")) {
+		if strings.HasPrefix(path, filepath.Join(os.TempDir(), "sr65-app-")) {
 			tmpDirAdded = true
 			break
 		}

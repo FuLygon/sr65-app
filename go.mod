@@ -1,4 +1,4 @@
-module sr65-software
+module sr65-app
 
 go 1.20
 

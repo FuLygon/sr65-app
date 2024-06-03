@@ -9,7 +9,7 @@ import (
 	_ "image/png"
 	"os"
 	"path/filepath"
-	"sr65-software/logger"
+	"sr65-app/logger"
 )
 
 // false for debugging ffmpeg
@@ -62,7 +62,7 @@ func ConvertDynamic(inputPath, outputDir, outputExt string) {
 	// convert gif to avi if input is gif
 	if filepath.Ext(inputPath) == ".gif" {
 		// create temporary directory for storing avi file
-		tmpDir, err := os.MkdirTemp("", "sr65-software-*")
+		tmpDir, err := os.MkdirTemp("", "sr65-app-*")
 		if err != nil {
 			logger.Fatal("error creating temporary directory for gif conversion", err)
 		}

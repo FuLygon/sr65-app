@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 env:
-  BUILD_RELEASE_OUTPUT: sr65-software
+  BUILD_RELEASE_OUTPUT: sr65-app
   GO_VERSION: '1.20'
 
 jobs:

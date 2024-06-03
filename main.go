@@ -5,9 +5,9 @@ import (
 	"github.com/ncruces/zenity"
 	"os"
 	"path/filepath"
-	"sr65-software/embed"
-	"sr65-software/internal"
-	"sr65-software/logger"
+	"sr65-app/embed"
+	"sr65-app/internal"
+	"sr65-app/logger"
 	"strings"
 )
 
@@ -32,7 +32,7 @@ func main() {
 			"- Image: png, jpg, gif"+"\n"+
 			"- Video: mp4",
 		zenity.Width(400),
-		zenity.Title("SR65 Software"),
+		zenity.Title("SR65 App"),
 		zenity.OKLabel("Open File..."),
 		zenity.CancelLabel("Close"),
 	)
