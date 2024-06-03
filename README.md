@@ -9,7 +9,7 @@ Based on the official app which only support Windows operating system.
 
 ## Download
 
-[![release](https://img.shields.io/github/release/FuLygon/sr65-app.svg?style=flat-square)](https://github.com/FuLygon/sr65-app)
+[![release](https://img.shields.io/github/release/FuLygon/sr65-app.svg?style=flat)](https://github.com/FuLygon/sr65-app/releases)
 
 ## Supported media formats
 - Image: png, jpg, gif
@@ -26,7 +26,7 @@ cd sr65-app
 
 - Copy `ffmpeg` binary to `embed/bin` directory if you want to embed it when building. This is optional.
 
-- Build
+- Build the app
 ```shell
 go build
 ```
@@ -35,4 +35,4 @@ go build
 - For configuring keyboard feature such as keymap, macros, layout, etc... refer to [Vial](https://get.vial.today) instead.
 - Dynamic media content such as gif, mp4 heavily rely on `ffmpeg` for converting.
 - Released binary were embedded with `ffmpeg` by default for all OS with `amd64` architecture. For `arm64` architecture, only `linux` version were embedded. For `windows` and `darwin` version with `arm64` architecture, make sure to have `ffmpeg` installed and added to system `PATH`. This is completely optional if you don't need to convert dynamic media content.
-- Antivirus software may flag released binary as malicious. This is a **false positive**. You can [build from source](#build-from-source) as an alternative.
+- Antivirus software may flag released binary as malicious. This is a **false positive**. You can [build the app from source](#build-from-source) as an alternative.
