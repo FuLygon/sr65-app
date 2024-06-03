@@ -110,5 +110,5 @@ func generateOutput(inputPath, outputDir, outputExt string) string {
 	inputBase := filepath.Base(inputPath)
 	inputExt := filepath.Ext(inputPath)
 	inputName := inputBase[0 : len(inputBase)-len(inputExt)]
-	return fmt.Sprintf("%s/%s.%s", outputDir, inputName, outputExt)
+	return filepath.Join(outputDir, fmt.Sprintf("%s.%s", inputName, outputExt))
 }
