@@ -54,8 +54,6 @@ func ConvertStatic(inputPath, outputDir, outputExt string, jpegQuality int) {
 	if err != nil {
 		logger.Fatal("error encoding image", err)
 	}
-
-	return
 }
 
 func ConvertDynamic(inputPath, outputDir, outputExt string) {
