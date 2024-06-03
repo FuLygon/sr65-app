@@ -58,7 +58,7 @@ jobs:
         if: ${{ !(matrix.os == 'windows-latest' && matrix.arch == 'arm64') && !(matrix.os == 'macos-latest' && matrix.arch == 'arm64') }}
 
       - name: Embedding FFMPEG binary
-        run: cp ${{ steps.setup-ffmpeg.outputs.ffmpeg-path }}/ffmpeg* bin
+        run: cp ${{ steps.setup-ffmpeg.outputs.ffmpeg-path }}/ffmpeg* embed/bin
         if: ${{ !(matrix.os == 'windows-latest' && matrix.arch == 'arm64') && !(matrix.os == 'macos-latest' && matrix.arch == 'arm64') }}
 
       - name: Set up Go
