@@ -47,7 +47,11 @@ func main() {
 	inputPath, err := zenity.SelectFile(
 		zenity.Title("Select a file"),
 		zenity.FileFilters{
-			{"Media files", []string{"*.png", "*.jpg", "*.gif", "*.mp4"}, true},
+			{
+				Name:     "Media files",
+				Patterns: []string{"*.png", "*.jpg", "*.gif", "*.mp4"},
+				CaseFold: true,
+			},
 		},
 	)
 	if err != nil {
