@@ -1,6 +1,7 @@
 package embed
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -20,7 +21,7 @@ func TestExtractBinaries(t *testing.T) {
 	paths := strings.Split(pathEnv, string(os.PathListSeparator))
 	var tmpDirAdded bool
 	for _, path := range paths {
-		if strings.HasPrefix(path, "/tmp/sr65-software-") {
+		if strings.HasPrefix(path, fmt.Sprintf("%s%csr65-software-", os.TempDir(), os.PathSeparator)) {
 			tmpDirAdded = true
 			break
 		}
