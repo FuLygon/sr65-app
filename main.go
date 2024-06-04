@@ -29,7 +29,7 @@ func main() {
 	// show question dialog
 	err = zenity.Question(
 		"Choose an image or video file. Supported file formats:"+"\n"+
-			"- Image: png, jpg, gif"+"\n"+
+			"- Image: png, jpg/jpeg, gif"+"\n"+
 			"- Video: mp4",
 		zenity.Width(400),
 		zenity.Title("SR65 App"),
@@ -49,7 +49,7 @@ func main() {
 		zenity.FileFilters{
 			{
 				Name:     "Media files",
-				Patterns: []string{"*.png", "*.jpg", "*.gif", "*.mp4"},
+				Patterns: []string{"*.png", "*.jpg", "*.jpeg", "*.gif", "*.mp4"},
 				CaseFold: true,
 			},
 		},
@@ -70,7 +70,7 @@ func main() {
 	// convert input file
 	logger.Info("converting file")
 	switch strings.ToLower(filepath.Ext(inputPath)) {
-	case ".jpg", ".png":
+	case ".jpg", ".jpeg", ".png":
 		internal.ConvertStatic(inputPath, outputDir, outputExtStatic, outputQualityStatic)
 	case ".gif", ".mp4":
 		internal.ConvertDynamic(inputPath, outputDir, outputExtDynamic)
