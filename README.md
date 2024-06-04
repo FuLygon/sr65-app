@@ -3,7 +3,7 @@
 [![CI](https://github.com/FuLygon/sr65-app/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/FuLygon/sr65-app/actions/workflows/ci.yaml)
 [![GoReportCard](https://goreportcard.com/badge/github.com/FuLygon/sr65-app)](https://goreportcard.com/report/github.com/FuLygon/sr65-app)
 
-Unofficial media converting app for **SR Studio Radiance65** keyboard. 
+Unofficial media conversion tool for **SR Studio Radiance65** keyboard screen.
 
 Based on the official app which only support Windows operating system.
 
@@ -12,7 +12,7 @@ Based on the official app which only support Windows operating system.
 [![release](https://img.shields.io/github/release/FuLygon/sr65-app.svg?style=flat)](https://github.com/FuLygon/sr65-app/releases)
 
 ## Supported media formats
-- Image: png, jpg, gif
+- Image: png, jpg/jpeg, gif
 - Video: mp4
 
 ## Build from source
