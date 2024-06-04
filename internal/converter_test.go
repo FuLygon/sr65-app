@@ -35,10 +35,16 @@ func TestConvertStatic(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	defer func() {
-		testFile.Close()
-		os.Remove(testFile.Name())
-	}()
+	defer func(file *os.File) {
+		err = file.Close()
+		if err != nil {
+			t.Logf("error closing test image: %v", err)
+		}
+		err = os.Remove(file.Name())
+		if err != nil {
+			t.Logf("error removing test image: %v", err)
+		}
+	}(testFile)
 
 	// encode test image
 	if err = png.Encode(testFile, img); err != nil {
@@ -52,26 +58,43 @@ func TestConvertStatic(t *testing.T) {
 	}
 
 	// convert static media
-	ConvertStatic(testFile.Name(), outputDir, outputStaticExt, outputStaticQuality)
+	err = ConvertStatic(testFile.Name(), outputDir, outputStaticExt, outputStaticQuality)
+	if err != nil {
+		t.Errorf("error converting image: %v", err)
+		t.FailNow()
+	}
 
 	// check if the output file exist
 	outputPath := generateOutput(testFile.Name(), outputDir, outputStaticExt)
+	defer func(path string) {
+		err = os.RemoveAll(path)
+		if err != nil {
+			t.Logf("error removing output directory: %v", err)
+		}
+	}(outputDir)
 	if _, err = os.Stat(outputPath); os.IsNotExist(err) {
 		t.Errorf("output file was not created")
+		t.FailNow()
 	}
-	defer os.RemoveAll(outputDir)
 
 	// open output file
 	outputFile, err := os.Open(outputPath)
 	if err != nil {
 		t.Errorf("error opening output file: %v", err)
+		t.FailNow()
 	}
-	defer outputFile.Close()
+	defer func(file *os.File) {
+		err = file.Close()
+		if err != nil {
+			t.Logf("error closing output file: %v", err)
+		}
+	}(outputFile)
 
 	// decode output file
 	config, _, err := image.DecodeConfig(outputFile)
 	if err != nil {
 		t.Errorf("error decoding output file: %v", err)
+		t.FailNow()
 	}
 
 	// check output file dimensions
@@ -94,10 +117,16 @@ func TestConvertDynamicGif(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	defer func() {
-		testFile.Close()
-		os.Remove(testFile.Name())
-	}()
+	defer func(file *os.File) {
+		err = file.Close()
+		if err != nil {
+			t.Logf("error closing test gif: %v", err)
+		}
+		err = os.Remove(file.Name())
+		if err != nil {
+			t.Logf("error removing test gif: %v", err)
+		}
+	}(testFile)
 
 	// encode test gif
 	if err = gif.Encode(testFile, img, nil); err != nil {
@@ -111,26 +140,44 @@ func TestConvertDynamicGif(t *testing.T) {
 	}
 
 	// convert gif
-	ConvertDynamic(testFile.Name(), outputDir, outputDynamicExt)
+	err = ConvertDynamic(testFile.Name(), outputDir, outputDynamicExt)
+	if err != nil {
+		t.Errorf("error converting gif: %v", err)
+		t.FailNow()
+	}
 
 	// check if the output file exist
 	outputPath := generateOutput(testVideo, outputDir, outputDynamicExt)
+	defer func(path string) {
+		err = os.RemoveAll(path)
+		if err != nil {
+			t.Logf("error removing output directory: %v", err)
+		}
+	}(outputDir)
 	if _, err = os.Stat(outputPath); os.IsNotExist(err) {
 		t.Errorf("output file was not created")
+		t.FailNow()
 	}
-	defer os.RemoveAll(outputDir)
 
 	// open output file
 	outputFile, err := os.Open(outputPath)
 	if err != nil {
 		t.Errorf("error opening output file: %v", err)
+		t.FailNow()
 	}
-	defer outputFile.Close()
+	defer func(file *os.File) {
+		err = file.Close()
+		if err != nil {
+			t.Logf("error closing output file: %v", err)
+			t.FailNow()
+		}
+	}(outputFile)
 
 	// decode output file
 	config, _, err := image.DecodeConfig(outputFile)
 	if err != nil {
 		t.Errorf("error decoding output file: %v", err)
+		t.FailNow()
 	}
 
 	// check output file dimensions
@@ -149,7 +196,12 @@ func TestConvertDynamicVideo(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	defer os.Remove(testVideo)
+	defer func(path string) {
+		err = os.Remove(path)
+		if err != nil {
+			t.Logf("error removing test video: %v", err)
+		}
+	}(testVideo)
 
 	// get test file path
 	testVideoPath, err := filepath.Abs(testVideo)
@@ -164,26 +216,43 @@ func TestConvertDynamicVideo(t *testing.T) {
 	}
 
 	// convert mp4
-	ConvertDynamic(testVideoPath, outputDir, outputDynamicExt)
+	err = ConvertDynamic(testVideoPath, outputDir, outputDynamicExt)
+	if err != nil {
+		t.Errorf("error converting video: %v", err)
+		t.FailNow()
+	}
 
 	// check if the output file exist
 	outputPath := generateOutput(testVideo, outputDir, outputDynamicExt)
+	defer func(path string) {
+		err = os.RemoveAll(path)
+		if err != nil {
+			t.Logf("error removing output directory: %v", err)
+		}
+	}(outputDir)
 	if _, err = os.Stat(outputPath); os.IsNotExist(err) {
 		t.Errorf("output file was not created")
+		t.FailNow()
 	}
-	defer os.RemoveAll(outputDir)
 
 	// open output file
 	outputFile, err := os.Open(outputPath)
 	if err != nil {
 		t.Errorf("error opening output file: %v", err)
+		t.FailNow()
 	}
-	defer outputFile.Close()
+	defer func(file *os.File) {
+		err = file.Close()
+		if err != nil {
+			t.Logf("error closing output file: %v", err)
+		}
+	}(outputFile)
 
 	// decode output file
 	config, _, err := image.DecodeConfig(outputFile)
 	if err != nil {
 		t.Errorf("error decoding output file: %v", err)
+		t.FailNow()
 	}
 
 	// check output file dimensions
