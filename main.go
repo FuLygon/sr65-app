@@ -20,11 +20,11 @@ const (
 
 func main() {
 	// embedding binaries
-	cleanup, err := embed.ExtractBinaries()
+	tmpDir, err := embed.ExtractBinaries()
 	if err != nil {
-		logger.Warn("error extracting embedded binaries, falling back to system ffmpeg")
+		logger.Warn("error extracting embedded binaries, falling back to system binaries", err)
 	}
-	defer cleanup()
+	defer os.RemoveAll(tmpDir)
 
 	// show question dialog
 	err = zenity.Question(

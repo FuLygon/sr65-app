@@ -8,12 +8,16 @@ import (
 )
 
 func TestExtractBinaries(t *testing.T) {
-	cleanup, err := ExtractBinaries()
-	defer cleanup()
-
+	tmpDir, err := ExtractBinaries()
 	if err != nil {
-		t.Errorf("ExtractBinaries() error = %v", err)
-		return
+		t.Errorf("error extracting embedded binaries %v", err)
+
+		// remove temporary directory whether it was created
+		err = os.Remove(tmpDir)
+		if err != nil {
+			t.Logf("error removing temporary directory %v", err)
+		}
+		t.FailNow()
 	}
 
 	// check if the temporary directory is added to PATH
@@ -31,8 +35,12 @@ func TestExtractBinaries(t *testing.T) {
 	}
 
 	// check if the temporary directory is removed after cleanup
-	cleanup()
-	tmpDir := strings.Split(pathEnv, string(os.PathListSeparator))[0]
+	err = os.RemoveAll(tmpDir)
+	if err != nil {
+		t.Errorf("error removing temporary directory %v", err)
+		t.FailNow()
+	}
+	tmpDir = strings.Split(pathEnv, string(os.PathListSeparator))[0]
 	_, err = os.ReadDir(tmpDir)
 	if !os.IsNotExist(err) {
 		t.Errorf("temporary directory was not removed after cleanup")

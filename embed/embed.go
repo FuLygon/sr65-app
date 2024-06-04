@@ -6,25 +6,22 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"sr65-app/logger"
 )
 
 //go:embed bin/*
 var embeddedBinFS embed.FS
 
-func ExtractBinaries() (func(), error) {
+func ExtractBinaries() (string, error) {
 	// create temporary directory
 	tmpDir, err := os.MkdirTemp("", "sr65-app-*")
 	if err != nil {
-		logger.Error("error creating temporary directory", err)
-		return func() {}, err
+		return "", fmt.Errorf("error creating temporary directory: %w", err)
 	}
 
 	// extract embedded binaries
 	err = extractEmbedFiles(embeddedBinFS, tmpDir, "bin")
 	if err != nil {
-		logger.Error("error extracting embedded binaries", err)
-		return func() {}, err
+		return "", fmt.Errorf("error extracting embedded binaries: %w", err)
 	}
 
 	// add temporary directory to PATH
@@ -32,11 +29,10 @@ func ExtractBinaries() (func(), error) {
 	pathEnv = fmt.Sprintf("%s%c%s", tmpDir, os.PathListSeparator, pathEnv)
 	err = os.Setenv("PATH", pathEnv)
 	if err != nil {
-		logger.Error("error updating PATH", err)
-		return func() {}, err
+		return "", fmt.Errorf("error updating PATH: %w", err)
 	}
 
-	return func() { os.RemoveAll(tmpDir) }, nil
+	return tmpDir, nil
 }
 
 func extractEmbedFiles(embedFS embed.FS, dir string, root string) error {
