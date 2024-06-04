@@ -15,14 +15,14 @@ import (
 // false for debugging ffmpeg
 const ffmpegSilent = true
 
-func ConvertStatic(inputPath, outputDir, outputExt string, jpegQuality int) {
+func ConvertStatic(inputPath, outputDir, outputExt string, jpegQuality int) error {
 	// open input file
 	inputFile, err := os.Open(inputPath)
 	if err != nil {
-		logger.Fatal("error opening input file", err)
+		return fmt.Errorf("error opening input file: %w", err)
 	}
-	defer func(inputFile *os.File) {
-		err = inputFile.Close()
+	defer func(file *os.File) {
+		err = file.Close()
 		if err != nil {
 			logger.Error("error closing input file", err)
 		}
@@ -31,7 +31,7 @@ func ConvertStatic(inputPath, outputDir, outputExt string, jpegQuality int) {
 	// decode image
 	img, _, err := image.Decode(inputFile)
 	if err != nil {
-		logger.Fatal("error decoding image", err)
+		return fmt.Errorf("error decoding image: %w", err)
 	}
 
 	// resizing image
@@ -40,10 +40,10 @@ func ConvertStatic(inputPath, outputDir, outputExt string, jpegQuality int) {
 	// create output file
 	outputFile, err := os.Create(generateOutput(inputPath, outputDir, outputExt))
 	if err != nil {
-		logger.Fatal("error creating output file", err)
+		return fmt.Errorf("error creating output file: %w", err)
 	}
-	defer func(outputFile *os.File) {
-		err = outputFile.Close()
+	defer func(file *os.File) {
+		err = file.Close()
 		if err != nil {
 			logger.Error("error closing output file", err)
 		}
@@ -52,11 +52,13 @@ func ConvertStatic(inputPath, outputDir, outputExt string, jpegQuality int) {
 	// encode img to output file
 	err = jpeg.Encode(outputFile, img, &jpeg.Options{Quality: jpegQuality})
 	if err != nil {
-		logger.Fatal("error encoding image", err)
+		return fmt.Errorf("error encoding image: %w", err)
 	}
+
+	return nil
 }
 
-func ConvertDynamic(inputPath, outputDir, outputExt string) {
+func ConvertDynamic(inputPath, outputDir, outputExt string) error {
 	var ffmpegInput = inputPath
 
 	// convert gif to avi if input is gif
@@ -64,9 +66,14 @@ func ConvertDynamic(inputPath, outputDir, outputExt string) {
 		// create temporary directory for storing avi file
 		tmpDir, err := os.MkdirTemp("", "sr65-app-*")
 		if err != nil {
-			logger.Fatal("error creating temporary directory for gif conversion", err)
+			return fmt.Errorf("error creating temporary directory for gif conversion: %w", err)
 		}
-		defer os.RemoveAll(tmpDir)
+		defer func(path string) {
+			err = os.RemoveAll(path)
+			if err != nil {
+				logger.Error("error removing temporary directory", err)
+			}
+		}(tmpDir)
 
 		// generate output avi path
 		outputFileAvi := generateOutput(inputPath, tmpDir, "avi")
@@ -82,7 +89,7 @@ func ConvertDynamic(inputPath, outputDir, outputExt string) {
 			Silent(ffmpegSilent).
 			Run()
 		if err != nil {
-			logger.Fatal("error converting gif to avi", err)
+			return fmt.Errorf("error converting gif to avi: %w", err)
 		}
 
 		// set ffmpegInput to avi path
@@ -102,8 +109,10 @@ func ConvertDynamic(inputPath, outputDir, outputExt string) {
 		Silent(ffmpegSilent).
 		Run()
 	if err != nil {
-		logger.Fatal("error converting video to "+outputExt, err)
+		return fmt.Errorf("error converting video to %s: %w", outputExt, err)
 	}
+
+	return nil
 }
 
 func generateOutput(inputPath, outputDir, outputExt string) string {

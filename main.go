@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"github.com/ncruces/zenity"
 	"os"
 	"path/filepath"
@@ -24,7 +25,12 @@ func main() {
 	if err != nil {
 		logger.Warn("error extracting embedded binaries, falling back to system binaries", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func(path string) {
+		err = os.RemoveAll(path)
+		if err != nil {
+			logger.Error("error removing temporary directory", err)
+		}
+	}(tmpDir)
 
 	// show question dialog
 	err = zenity.Question(
@@ -37,10 +43,8 @@ func main() {
 		zenity.CancelLabel("Close"),
 	)
 	if err != nil {
-		if errors.Is(err, zenity.ErrCanceled) {
-			logger.Fatal("user cancelled", err)
-		}
-		logger.Fatal("an error occurred", err)
+		handleZenityCancelErr(err)
+		return
 	}
 
 	// show file picker
@@ -55,28 +59,43 @@ func main() {
 		},
 	)
 	if err != nil {
-		if errors.Is(err, zenity.ErrCanceled) {
-			logger.Fatal("user cancelled", err)
-		}
-		logger.Fatal("an error occurred", err)
+		handleZenityCancelErr(err)
+		return
 	}
 
 	// create output directory
 	err = os.MkdirAll(outputDir, 0755)
 	if err != nil {
-		logger.Fatal("error creating output directory", err)
+		logger.Error("error creating output directory", err)
+		return
 	}
 
 	// convert input file
-	logger.Info("converting file")
 	switch strings.ToLower(filepath.Ext(inputPath)) {
 	case ".jpg", ".jpeg", ".png":
-		internal.ConvertStatic(inputPath, outputDir, outputExtStatic, outputQualityStatic)
+		err = internal.ConvertStatic(inputPath, outputDir, outputExtStatic, outputQualityStatic)
+		if err != nil {
+			logger.Error("error converting static media", err)
+		}
 	case ".gif", ".mp4":
-		internal.ConvertDynamic(inputPath, outputDir, outputExtDynamic)
+		err = internal.ConvertDynamic(inputPath, outputDir, outputExtDynamic)
+		if err != nil {
+			logger.Error("error converting dynamic media", err)
+		}
 	default:
-		logger.Fatal("unsupported file format")
+		err = fmt.Errorf("unsupported format: %s", filepath.Ext(inputPath))
+		logger.Error("unsupported format", err)
+	}
+	if err != nil {
+		return
 	}
 
-	logger.Info(`converted successfully, output saved in "outputs" directory. Exiting...`)
+	logger.Info("converted successfully, output saved in 'outputs' directory. Exiting...")
+}
+
+func handleZenityCancelErr(err error) {
+	if errors.Is(err, zenity.ErrCanceled) {
+		logger.Warn("user cancelled", err)
+	}
+	logger.Error("an error occurred", err)
 }
