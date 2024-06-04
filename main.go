@@ -96,6 +96,7 @@ func main() {
 func handleZenityCancelErr(err error) {
 	if errors.Is(err, zenity.ErrCanceled) {
 		logger.Warn("user cancelled", err)
+		return
 	}
 	logger.Error("an error occurred", err)
 }
