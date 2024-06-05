@@ -71,18 +71,19 @@ jobs:
         run: GOARCH=${{ matrix.arch }} go build
 
       - name: Archive
+        id: archive
         shell: bash
         run: |
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            7z a ${{ env.BUILD_RELEASE_OUTPUT }}_${{ matrix.release_tag_os }}_${{ matrix.arch }}.zip ${{ env.BUILD_RELEASE_OUTPUT }}.exe
+            OUTPUT=${{ env.BUILD_RELEASE_OUTPUT }}_${{ matrix.release_tag_os }}_${{ matrix.arch }}.zip
+            7z a $OUTPUT ${{ env.BUILD_RELEASE_OUTPUT }}.exe
           else
-            tar -czvf ${{ env.BUILD_RELEASE_OUTPUT }}_${{ matrix.release_tag_os }}_${{ matrix.arch }}.tar.gz ${{ env.BUILD_RELEASE_OUTPUT }}
+            OUTPUT=${{ env.BUILD_RELEASE_OUTPUT }}_${{ matrix.release_tag_os }}_${{ matrix.arch }}.tar.gz
+            tar -czvf $OUTPUT ${{ env.BUILD_RELEASE_OUTPUT }}
           fi
+          echo "output=$OUTPUT" >> "$GITHUB_OUTPUT"
 
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ needs.create_release.outputs.tag-name }}
-          files: |
-            *.zip
-            *.tar.gz
+      - name: Upload Release Asset
+        run: gh release upload ${{ github.ref_name }} ${{ steps.archive.outputs.output }}
+        env:
+          GH_TOKEN: ${{ secrets.github_token }}
