@@ -58,28 +58,16 @@ func ConvertStatic(inputPath, outputDir, outputExt string, jpegQuality int) erro
 	return nil
 }
 
-func ConvertDynamic(inputPath, outputDir, outputExt string) error {
+func ConvertDynamic(inputPath, outputDir, outputExt, tmpDir string) error {
 	var ffmpegInput = inputPath
 
 	// convert gif to avi if input is gif
 	if filepath.Ext(inputPath) == ".gif" {
-		// create temporary directory for storing avi file
-		tmpDir, err := os.MkdirTemp("", "sr65-app-*")
-		if err != nil {
-			return fmt.Errorf("error creating temporary directory for gif conversion: %w", err)
-		}
-		defer func(path string) {
-			err = os.RemoveAll(path)
-			if err != nil {
-				logger.Error("error removing temporary directory", err)
-			}
-		}(tmpDir)
-
 		// generate output avi path
 		outputFileAvi := generateOutput(inputPath, tmpDir, "avi")
 
 		// convert gif to avi
-		err = ffmpeg.Input(inputPath).Output(outputFileAvi,
+		err := ffmpeg.Input(inputPath).Output(outputFileAvi,
 			ffmpeg.KwArgs{
 				"f":   "gif",
 				"vf":  "fps=31,scale=128:128:flags=lanczos",

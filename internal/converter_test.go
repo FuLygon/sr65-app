@@ -112,6 +112,18 @@ func TestConvertDynamicGif(t *testing.T) {
 		}
 	}
 
+	// prepare temporary directory
+	tmpDir, err := os.MkdirTemp("", "sr65-app-test-*")
+	if err != nil {
+		panic(err)
+	}
+	defer func(path string) {
+		err = os.RemoveAll(path)
+		if err != nil {
+			t.Logf("error removing temporary directory: %v", err)
+		}
+	}(tmpDir)
+
 	// create test file
 	testFile, err := os.Create(testGif)
 	if err != nil {
@@ -140,7 +152,7 @@ func TestConvertDynamicGif(t *testing.T) {
 	}
 
 	// convert gif
-	err = ConvertDynamic(testFile.Name(), outputDir, outputDynamicExt)
+	err = ConvertDynamic(testFile.Name(), outputDir, outputDynamicExt, tmpDir)
 	if err != nil {
 		t.Errorf("error converting gif: %v", err)
 		t.FailNow()
@@ -203,6 +215,18 @@ func TestConvertDynamicVideo(t *testing.T) {
 		}
 	}(testVideo)
 
+	// prepare temporary directory
+	tmpDir, err := os.MkdirTemp("", "sr65-app-test-*")
+	if err != nil {
+		panic(err)
+	}
+	defer func(path string) {
+		err = os.RemoveAll(path)
+		if err != nil {
+			t.Logf("error removing temporary directory: %v", err)
+		}
+	}(tmpDir)
+
 	// get test file path
 	testVideoPath, err := filepath.Abs(testVideo)
 	if err != nil {
@@ -216,7 +240,7 @@ func TestConvertDynamicVideo(t *testing.T) {
 	}
 
 	// convert mp4
-	err = ConvertDynamic(testVideoPath, outputDir, outputDynamicExt)
+	err = ConvertDynamic(testVideoPath, outputDir, outputDynamicExt, tmpDir)
 	if err != nil {
 		t.Errorf("error converting video: %v", err)
 		t.FailNow()

@@ -78,7 +78,7 @@ func main() {
 			logger.Error("error converting static media", err)
 		}
 	case ".gif", ".mp4":
-		err = internal.ConvertDynamic(inputPath, outputDir, outputExtDynamic)
+		err = internal.ConvertDynamic(inputPath, outputDir, outputExtDynamic, tmpDir)
 		if err != nil {
 			logger.Error("error converting dynamic media", err)
 		}
