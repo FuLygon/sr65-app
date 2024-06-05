@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ncruces/zenity"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sr65-app/embed"
 	"sr65-app/internal"
@@ -13,11 +14,26 @@ import (
 )
 
 const (
+	// output
 	outputDir           = "outputs"
 	outputExtStatic     = "jpg"
 	outputExtDynamic    = "mjpeg"
 	outputQualityStatic = 95
+
+	// zenity
+	zenityTitle = "SR65 App"
+	zenityWidth = 400
 )
+
+var ffmpegInstalled bool
+
+func init() {
+	// check if ffmpeg is installed
+	_, err := exec.LookPath("ffmpeg")
+	if err == nil {
+		ffmpegInstalled = true
+	}
+}
 
 func main() {
 	// embedding binaries
@@ -32,13 +48,26 @@ func main() {
 		}
 	}(tmpDir)
 
+	// show warning dialog if ffmpeg is not installed
+	if !ffmpegInstalled {
+		err = zenity.Warning(
+			"ffmpeg command not found, certain features will be unavailable.",
+			zenity.Title(zenityTitle),
+			zenity.Width(zenityWidth),
+		)
+		if err != nil {
+			handleZenityCancelErr(err)
+			return
+		}
+	}
+
 	// show question dialog
 	err = zenity.Question(
 		"Choose an image or video file. Supported file formats:"+"\n"+
 			"- Image: png, jpg/jpeg, gif"+"\n"+
 			"- Video: mp4",
-		zenity.Width(400),
-		zenity.Title("SR65 App"),
+		zenity.Width(zenityWidth),
+		zenity.Title(zenityTitle),
 		zenity.OKLabel("Open File..."),
 		zenity.CancelLabel("Close"),
 	)
