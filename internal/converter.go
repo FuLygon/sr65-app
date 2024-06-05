@@ -67,9 +67,8 @@ func ConvertDynamic(inputPath, outputDir, outputExt, tmpDir string) error {
 		outputFileAvi := generateOutput(inputPath, tmpDir, "avi")
 
 		// convert gif to avi
-		err := ffmpeg.Input(inputPath).Output(outputFileAvi,
+		err := ffmpeg.Input(inputPath, ffmpeg.KwArgs{"f": "gif"}).Output(outputFileAvi,
 			ffmpeg.KwArgs{
-				"f":   "gif",
 				"vf":  "fps=31,scale=128:128:flags=lanczos",
 				"q:v": 1,
 			}).
