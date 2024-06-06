@@ -5,6 +5,7 @@ import (
 	"github.com/disintegration/imaging"
 	ffmpeg "github.com/u2takey/ffmpeg-go"
 	"image"
+	"image/gif"
 	"image/jpeg"
 	_ "image/png"
 	"os"
@@ -97,6 +98,52 @@ func ConvertDynamic(inputPath, outputDir, outputExt, tmpDir string) error {
 		Run()
 	if err != nil {
 		return fmt.Errorf("error converting video to %s: %w", outputExt, err)
+	}
+
+	return nil
+}
+
+func ConvertGif(inputPath, outputDir, outputExt string, jpegQuality int) error {
+	// open input file
+	inputFile, err := os.Open(inputPath)
+	if err != nil {
+		return fmt.Errorf("error opening input file: %w", err)
+	}
+	defer func(file *os.File) {
+		err = file.Close()
+		if err != nil {
+			logger.Error("error closing input file", err)
+		}
+	}(inputFile)
+
+	// decode gif
+	gifData, err := gif.DecodeAll(inputFile)
+	if err != nil {
+		return fmt.Errorf("error decoding gif: %w", err)
+	}
+
+	// create output file
+	outputFile, err := os.Create(generateOutput(inputPath, outputDir, outputExt))
+	if err != nil {
+		logger.Fatal("error creating output file", err)
+	}
+	defer func(outputFile *os.File) {
+		err = outputFile.Close()
+		if err != nil {
+			logger.Error("error closing output file", err)
+		}
+	}(outputFile)
+
+	// loop through gif frames
+	for _, frame := range gifData.Image {
+		// resizing frame
+		img := imaging.Resize(frame, 128, 128, imaging.Lanczos)
+
+		// encode img to output file
+		err = jpeg.Encode(outputFile, img, &jpeg.Options{Quality: jpegQuality})
+		if err != nil {
+			return fmt.Errorf("error encoding image: %w", err)
+		}
 	}
 
 	return nil
