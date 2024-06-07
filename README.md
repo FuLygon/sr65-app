@@ -34,5 +34,5 @@ go build
 - Video conversion heavily rely on `ffmpeg`. GIF conversion can be converted using built-in function or `ffmpeg` if `ffmpeg` is available.
 - Pre-built binaries were embedded with `ffmpeg` for all OS with `amd64` architecture. For `arm64` architecture, only `linux` OS were embedded. For `windows` and `darwin` OS with `arm64` architecture, make sure to have `ffmpeg` installed and added to system `PATH`. This is only necessary for converting video or GIF using
 `ffmpeg`.
-- All pre-built binaries were embedded with `zenity` for displaying GUI dialogs.
+- Pre-built binaries were embedded with `zenity` for `windows` and `darwin` OS for displaying GUI dialogs.
 - Antivirus software may flag pre-built binaries as malicious. This is a **false positive**. You can [build the app from source](#build-from-source) as an alternative.
