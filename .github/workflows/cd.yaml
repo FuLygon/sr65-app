@@ -8,6 +8,7 @@ on:
 env:
   BUILD_RELEASE_OUTPUT: sr65-app
   GO_VERSION: '1.20'
+  ZENITY_VERSION: 'v0.10.12'
 
 jobs:
   prepare_release:
@@ -23,9 +24,66 @@ jobs:
           generate_release_notes: true
           draft: true
 
+  build_zenity:
+    name: Build Zenity
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        arch: [amd64, arm64]
+        include:
+          - os: ubuntu-latest
+            artifact_os: linux
+          - os: macos-latest
+            artifact_os: darwin
+          - os: windows-latest
+            artifact_os: windows
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: ncruces/zenity
+          ref: ${{ env.ZENITY_VERSION }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Build
+        shell: bash
+        working-directory: ./cmd/zenity
+        run: |
+          go generate ../../...
+          
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            printf '#!/bin/sh\nexec zenity.exe --unixeol --cygpath "$@"' > zenity
+          fi
+          
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+            GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build -tags dev
+          else
+            GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build -ldflags="-s -w" -trimpath
+          fi
+          
+          mkdir -p outputs
+          mv zenity* outputs
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: zenity_${{ matrix.artifact_os }}_${{ matrix.arch }}
+          path: ./cmd/zenity/outputs
+          if-no-files-found: error
+          retention-days: 1
+
   build_release:
     name: Build Release
-    needs: prepare_release
+    needs: [prepare_release,build_zenity]
 
     strategy:
       fail-fast: false
@@ -61,6 +119,12 @@ jobs:
       - name: Embedding FFMPEG binary
         run: cp ${{ steps.setup-ffmpeg.outputs.ffmpeg-path }}/ffmpeg* embed/bin
         if: ${{ !(matrix.os == 'windows-latest' && matrix.arch == 'arm64') && !(matrix.os == 'macos-latest' && matrix.arch == 'arm64') }}
+
+      - name: Embedding Zenity binary
+        uses: actions/download-artifact@v4
+        with:
+          name: zenity_${{ matrix.release_os }}_${{ matrix.arch }}
+          path: embed/bin
 
       - name: Set up Go
         uses: actions/setup-go@v5
