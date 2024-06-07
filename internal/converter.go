@@ -16,6 +16,7 @@ import (
 // false for debugging ffmpeg
 const ffmpegSilent = true
 
+// ConvertStatic convert static image file
 func ConvertStatic(inputPath, outputDir, outputExt string, jpegQuality int) error {
 	// open input file
 	inputFile, err := os.Open(inputPath)
@@ -59,6 +60,7 @@ func ConvertStatic(inputPath, outputDir, outputExt string, jpegQuality int) erro
 	return nil
 }
 
+// ConvertDynamic convert dynamic image file such as gif or video file, function relies on ffmpeg for conversion
 func ConvertDynamic(inputPath, outputDir, outputExt, tmpDir string) error {
 	var ffmpegInput = inputPath
 
@@ -103,6 +105,7 @@ func ConvertDynamic(inputPath, outputDir, outputExt, tmpDir string) error {
 	return nil
 }
 
+// ConvertGif convert gif file, built-in function and does not rely on ffmpeg
 func ConvertGif(inputPath, outputDir, outputExt string, jpegQuality int) error {
 	// open input file
 	inputFile, err := os.Open(inputPath)

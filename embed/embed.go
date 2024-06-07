@@ -11,6 +11,7 @@ import (
 //go:embed bin/*
 var embeddedBinFS embed.FS
 
+// ExtractBinaries extract embedded binaries into a temporary directory and adds it to PATH
 func ExtractBinaries() (string, error) {
 	// create temporary directory
 	tmpDir, err := os.MkdirTemp("", "sr65-app-*")
