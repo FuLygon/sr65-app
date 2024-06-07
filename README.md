@@ -10,8 +10,8 @@ Unofficial media conversion tool for **SR Studio Radiance65** keyboard screen.
 [![release](https://img.shields.io/github/release/FuLygon/sr65-app.svg?style=flat)](https://github.com/FuLygon/sr65-app/releases)
 
 ## Supported media formats
-- Image: `png`, `jpg/jpeg`, `gif`
-- Video: `mp4`
+- Image: `png`, `jpg/jpeg`, `gif`, `bmp`, `webp`
+- Video: `mp4`, `mkv`, `flv`, `ts`, `webm`
 
 ## Build from source
 Make sure [go](https://go.dev) is installed.
