@@ -30,11 +30,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [macos-latest, windows-latest]
         arch: [amd64, arm64]
         include:
-          - os: ubuntu-latest
-            artifact_os: linux
           - os: macos-latest
             artifact_os: darwin
           - os: windows-latest
@@ -64,12 +62,7 @@ jobs:
             printf '#!/bin/sh\nexec zenity.exe --unixeol --cygpath "$@"' > zenity
           fi
           
-          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build -tags dev
-          else
-            GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build -ldflags="-s -w" -trimpath
-          fi
-          
+          GOARCH=${{ matrix.arch }} CGO_ENABLED=0 go build -ldflags="-s -w" -trimpath
           mkdir -p outputs
           mv zenity* outputs
 
@@ -125,6 +118,7 @@ jobs:
         with:
           name: zenity_${{ matrix.release_tag_os }}_${{ matrix.arch }}
           path: embed/bin
+        if: matrix.os != 'ubuntu-latest'
 
       - name: Set up Go
         uses: actions/setup-go@v5
