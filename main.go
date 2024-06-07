@@ -15,10 +15,10 @@ import (
 
 const (
 	// output
-	outputDir           = "outputs"
-	outputExtStatic     = "jpg"
-	outputExtDynamic    = "mjpeg"
-	outputQualityStatic = 95
+	outputDir        = "outputs"
+	outputExtStatic  = "jpg"
+	outputExtDynamic = "mjpeg"
+	outputJpegStatic = 95
 
 	// zenity
 	zenityTitle = "SR65 App"
@@ -102,20 +102,68 @@ func main() {
 	// convert input file
 	switch strings.ToLower(filepath.Ext(inputPath)) {
 	case ".jpg", ".jpeg", ".png":
-		err = internal.ConvertStatic(inputPath, outputDir, outputExtStatic, outputQualityStatic)
+		err = internal.ConvertStatic(inputPath, outputDir, outputExtStatic, outputJpegStatic)
 		if err != nil {
 			logger.Error("error converting static media", err)
+			return
 		}
-	case ".gif", ".mp4":
+
+	case ".gif":
+		if ffmpegInstalled {
+			// show question dialog for picking conversion method
+			err = zenity.Question(
+				"Choose method for converting gif:"+"\n"+
+					"- built-in: doesn't rely on ffmpeg, might crash keyboard software"+"\n"+
+					"- ffmpeg: better compatibility, might slow down gif playback speed (Recommended)"+"\n"+
+					"\n"+
+					"You should try both methods to see which one works best for your gif.",
+				zenity.Width(zenityWidth),
+				zenity.Title(zenityTitle),
+				zenity.OKLabel("ffmpeg"),
+				zenity.ExtraButton("built-in"),
+				zenity.CancelLabel("Close"),
+			)
+
+			switch {
+			case err == nil:
+				// convert using ffmpeg
+				err = internal.ConvertDynamic(inputPath, outputDir, outputExtDynamic, tmpDir)
+				if err != nil {
+					logger.Error("error converting gif", err)
+					return
+				}
+
+			case errors.Is(err, zenity.ErrExtraButton):
+				// convert using built-in function
+				err = internal.ConvertGif(inputPath, outputDir, outputExtDynamic, outputJpegStatic)
+				if err != nil {
+					logger.Error("error converting gif", err)
+					return
+				}
+
+			default:
+				handleZenityCancelErr(err)
+				return
+			}
+
+		} else {
+			// convert using built-in function if ffmpeg is not installed
+			err = internal.ConvertGif(inputPath, outputDir, outputExtDynamic, outputJpegStatic)
+			if err != nil {
+				logger.Error("error converting gif", err)
+				return
+			}
+		}
+
+	case ".mp4":
 		err = internal.ConvertDynamic(inputPath, outputDir, outputExtDynamic, tmpDir)
 		if err != nil {
-			logger.Error("error converting dynamic media", err)
+			logger.Error("error converting video", err)
+			return
 		}
+
 	default:
-		err = fmt.Errorf("unsupported format: %s", filepath.Ext(inputPath))
-		logger.Error("unsupported format", err)
-	}
-	if err != nil {
+		logger.Error("unsupported format", fmt.Errorf("unsupported format: %s", filepath.Ext(inputPath)))
 		return
 	}
 
