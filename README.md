@@ -22,7 +22,7 @@ git clone https://github.com/FuLygon/sr65-app.git
 cd sr65-app
 ```
 
-- Copy `ffmpeg` binary to `embed/bin` directory if you want to embed it when building (optional)
+- Copy `ffmpeg` or `zenity` binary to `embed/bin` directory if you want to embed it when building (optional)
 
 - Build the app
 ```shell
@@ -32,6 +32,7 @@ go build
 ## Note
 - For configuring keyboard feature such as keymap, macros, layout, etc... refer to [Vial](https://get.vial.today) instead.
 - Video conversion heavily rely on `ffmpeg`. GIF conversion can be converted using built-in function or `ffmpeg` if `ffmpeg` is available.
-- Released binary were embedded with `ffmpeg` by default for all OS with `amd64` architecture. For `arm64` architecture, only `linux` version were embedded. For `windows` and `darwin` version with `arm64` architecture, make sure to have `ffmpeg` installed and added to system `PATH`. This is only necessary for converting video or GIF using
+- Pre-built binaries were embedded with `ffmpeg` for all OS with `amd64` architecture. For `arm64` architecture, only `linux` OS were embedded. For `windows` and `darwin` OS with `arm64` architecture, make sure to have `ffmpeg` installed and added to system `PATH`. This is only necessary for converting video or GIF using
 `ffmpeg`.
-- Antivirus software may flag released binary as malicious. This is a **false positive**. You can [build the app from source](#build-from-source) as an alternative.
+- All pre-built binaries were embedded with `zenity` for displaying GUI dialogs.
+- Antivirus software may flag pre-built binaries as malicious. This is a **false positive**. You can [build the app from source](#build-from-source) as an alternative.
