@@ -64,8 +64,8 @@ func main() {
 	// show question dialog
 	err = zenity.Question(
 		"Choose an image or video file. Supported file formats:"+"\n"+
-			"- Image: png, jpg/jpeg, gif"+"\n"+
-			"- Video: mp4",
+			"- Image: png, jpg/jpeg, gif, bmp, webp"+"\n"+
+			"- Video: mp4, mkv, flv, ts, webm",
 		zenity.Width(zenityWidth),
 		zenity.Title(zenityTitle),
 		zenity.OKLabel("Open File..."),
