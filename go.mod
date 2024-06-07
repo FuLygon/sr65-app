@@ -7,6 +7,7 @@ require (
 	github.com/ncruces/zenity v0.10.12
 	github.com/sirupsen/logrus v1.9.3
 	github.com/u2takey/ffmpeg-go v0.5.0
+	golang.org/x/image v0.16.0
 )
 
 require (
@@ -17,6 +18,5 @@ require (
 	github.com/josephspurrier/goversioninfo v1.4.0 // indirect
 	github.com/randall77/makefat v0.0.0-20210315173500-7ddd0e42c844 // indirect
 	github.com/u2takey/go-utils v0.3.1 // indirect
-	golang.org/x/image v0.16.0 // indirect
 	golang.org/x/sys v0.17.0 // indirect
 )
