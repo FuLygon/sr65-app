@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/disintegration/imaging"
 	ffmpeg "github.com/u2takey/ffmpeg-go"
+	_ "golang.org/x/image/bmp"
+	_ "golang.org/x/image/webp"
 	"image"
 	"image/gif"
 	"image/jpeg"
