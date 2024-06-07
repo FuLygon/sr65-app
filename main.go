@@ -81,8 +81,13 @@ func main() {
 		zenity.Title("Select a file"),
 		zenity.FileFilters{
 			{
-				Name:     "Media files",
-				Patterns: []string{"*.png", "*.jpg", "*.jpeg", "*.gif", "*.mp4"},
+				Name:     "Image files",
+				Patterns: []string{"*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp", "*.webp"},
+				CaseFold: true,
+			},
+			{
+				Name:     "Video files",
+				Patterns: []string{"*.mp4", "*.mkv", "*.flv", "*.ts", "*.webm"},
 				CaseFold: true,
 			},
 		},
@@ -101,7 +106,7 @@ func main() {
 
 	// convert input file
 	switch strings.ToLower(filepath.Ext(inputPath)) {
-	case ".jpg", ".jpeg", ".png":
+	case ".jpg", ".jpeg", ".png", ".bmp", ".webp":
 		err = internal.ConvertStatic(inputPath, outputDir, outputExtStatic, outputJpegStatic)
 		if err != nil {
 			logger.Error("error converting static media", err)
@@ -155,7 +160,7 @@ func main() {
 			}
 		}
 
-	case ".mp4":
+	case ".mp4", ".mkv", ".flv", ".ts", ".webm":
 		err = internal.ConvertDynamic(inputPath, outputDir, outputExtDynamic, tmpDir)
 		if err != nil {
 			logger.Error("error converting video", err)
