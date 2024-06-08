@@ -1,8 +1,7 @@
 # Radiance65 App
-
 [![CI](https://github.com/FuLygon/sr65-app/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/FuLygon/sr65-app/actions/workflows/ci.yaml)
 [![GoReportCard](https://goreportcard.com/badge/github.com/FuLygon/sr65-app)](https://goreportcard.com/report/github.com/FuLygon/sr65-app)
-
+# Click here for Vietnamese readme [![vn](https://img.shields.io/badge/lang-vn-red.svg)](https://github.com/whoismaiko/sr65-app/blob/main/Readme-VI.md)
 Unofficial media conversion tool for **SR Studio Radiance65** keyboard screen.
 
 ## Download
