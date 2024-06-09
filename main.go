@@ -110,7 +110,6 @@ func main() {
 		err = internal.ConvertStatic(inputPath, outputDir, outputExtStatic, outputJpegStatic)
 		if err != nil {
 			logger.Error("error converting static media", err)
-			return
 		}
 
 	case ".gif":
@@ -135,7 +134,6 @@ func main() {
 				err = internal.ConvertDynamic(inputPath, outputDir, outputExtDynamic, tmpDir)
 				if err != nil {
 					logger.Error("error converting gif", err)
-					return
 				}
 
 			case errors.Is(err, zenity.ErrExtraButton):
@@ -143,12 +141,10 @@ func main() {
 				err = internal.ConvertGif(inputPath, outputDir, outputExtDynamic, outputJpegStatic)
 				if err != nil {
 					logger.Error("error converting gif", err)
-					return
 				}
 
 			default:
 				handleZenityCancelErr(err)
-				return
 			}
 
 		} else {
@@ -156,7 +152,6 @@ func main() {
 			err = internal.ConvertGif(inputPath, outputDir, outputExtDynamic, outputJpegStatic)
 			if err != nil {
 				logger.Error("error converting gif", err)
-				return
 			}
 		}
 
@@ -164,15 +159,61 @@ func main() {
 		err = internal.ConvertDynamic(inputPath, outputDir, outputExtDynamic, tmpDir)
 		if err != nil {
 			logger.Error("error converting video", err)
-			return
 		}
 
 	default:
-		logger.Error("unsupported format", fmt.Errorf("unsupported format: %s", filepath.Ext(inputPath)))
+		err = fmt.Errorf("unsupported format: %s", filepath.Ext(inputPath))
+		logger.Error("unsupported format", err)
+	}
+
+	if err != nil {
+		// show zenity error dialog
+		err = zenity.Error(
+			"An error occurred while converting file."+"\n"+
+				"\n"+
+				err.Error(),
+			zenity.Title(zenityTitle),
+			zenity.Width(zenityWidth),
+			zenity.OKLabel("Close"),
+		)
+		if err != nil {
+			logger.Error("error showing error dialog", err)
+		}
+
 		return
 	}
 
-	logger.Info("converted successfully, output saved in 'outputs' directory. Exiting...")
+	// read outputs dir path
+	outputDirPath, err := filepath.Abs(outputDir)
+	if err != nil {
+		logger.Warn("error getting output directory path", err)
+
+		// show success log without output directory path
+		logger.Info("converted successfully, output saved in 'outputs' directory")
+		return
+	}
+
+	logger.Info("converted successfully, output saved in " + outputDirPath)
+
+	// show success dialog
+	err = zenity.Question(
+		"File converted successfully. Saved into "+outputDirPath,
+		zenity.Width(zenityWidth),
+		zenity.Title(zenityTitle),
+		zenity.Icon(zenity.InfoIcon),
+		zenity.OKLabel("Open output"),
+		zenity.CancelLabel("Close"),
+	)
+	if err != nil && !errors.Is(err, zenity.ErrCanceled) {
+		return
+	}
+
+	// open output directory
+	err = internal.OpenInExplorer(outputDirPath)
+	if err != nil {
+		logger.Error("error opening output directory", err)
+		return
+	}
 }
 
 func handleZenityCancelErr(err error) {
